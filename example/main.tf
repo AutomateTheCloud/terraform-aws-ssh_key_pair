@@ -1,0 +1,39 @@
+terraform {
+  required_version = "~> 1.11.0"
+}
+
+##-----------------------------------------------------------------------------
+# Providers
+provider "aws" {
+  alias  = "example"
+  region = "us-east-1"
+}
+
+##-----------------------------------------------------------------------------
+# Module: SSH Key Pair
+module "ssh_key_pair" {
+  source    = "../"
+  providers = { aws.this = aws.example }
+
+  details = {
+    scope               = "Demo"
+    purpose             = "SSH Key"
+    environment         = "prd"
+    additional_tags = {
+      "Project"         = "Project Name"
+      "ProjectID"       = "123456789"
+      "Contact"         = "David Singer - david.singer@example.com"
+    }
+  }
+
+  name       = "demo-key-1234"
+  public_key = file("${path.root}/files/demo-key-1234.pem.pub")
+  # public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCzHsbsjXbQh8td7DyaDZkl+Yl13nMKRT97Xzp4IpqzWpJ4bUYG3FWAW1e9wUJby6tChHXPVwFWcJgtEBOyGhjKfjJ6MaW9etiu2kWveAOicuIGyaQZf1KX9LcZjcKa4JCAcvlnRW8YDoKVGL+WcFDNA+RmdklU5IkLLC6q1H9KYGFHgFu7kBO7IxqsOLPR3veOwQRkUASziTvnB949vjdGpWq5QVFXiPK0A/nPYh/YvXcTS3y0Vgcr/dQkqNLX3UV0kZ5TlQmOKiYDPCyjXHCDaZYE4S9nnbSGWWWcS1V0+0WSwPRjhdaK4C9Np3of+g4pzTCeVqAVj0Dx830ALDMmmHzw+udJGf1eoObbZd2qT76ICLWNkWQyd5kPq6TXFHYE3TbO8/zR1aXIxMn//n2Ft7L5pvsMqLr2odg0kk3rpuNaqBwtQkoNqPBCoVAOcL1HuwfP82tyWeN9Ooz3clMatvq7ckuLgDj3GkQvrjtiIY3lmIE5WKrkpcdaPVej9VLNGJwYOIM0Se7+tyMuKPbfUXlWYKuCdmwZ8wocLUq424h3TeVjRr0Grnw5nQyIxQKsc6Nbizlp5cCQHvLKuhVeDHaG8FBszAnY/oWZfJYfrltnV6sOEdGO/5JxoULDpOGxjwBAzARrfuZQXjhohWDG8Oc0ggtNDjP7oMDIAECasQ=="
+}
+
+##-----------------------------------------------------------------------------
+# Outputs
+output "metadata" {
+  description = "Metadata"
+  value = module.ssh_key_pair.metadata
+}
